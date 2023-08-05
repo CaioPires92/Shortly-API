@@ -5,7 +5,6 @@ import { nanoid } from 'nanoid'
 
 export async function createShorten(req, res) {
   const { url } = req.body
-  const { userId } = res.locals.session
 
   if (!url) {
     return res.status(400).send({ message: 'URL não fornecida.' })
@@ -14,12 +13,14 @@ export async function createShorten(req, res) {
   const shortUrl = nanoid(7)
 
   try {
-    await db.query(
-      'INSERT INTO urls (original_url, short_url) VALUES ($1, $2)',
+    const result = await db.query(
+      'INSERT INTO url (original_url, short_url) VALUES ($1, $2) RETURNING id',
       [url, shortUrl]
     )
 
-    res.status(200).send({ userId, shortUrl })
+    const id = result.rows[0].id
+
+    res.status(201).send({ id, shortUrl })
   } catch (err) {
     res.status(500).send(err.message)
   }

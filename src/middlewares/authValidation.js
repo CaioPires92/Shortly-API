@@ -10,8 +10,6 @@ export async function authValidation(req, res, next) {
       token
     ])
 
-    console.log(response.rowCount)
-
     if (response.rowCount <= 0) return res.sendStatus(401)
 
     const session = response.rows[0]
