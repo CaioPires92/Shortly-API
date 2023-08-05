@@ -12,7 +12,7 @@ export async function signUp(req, res) {
     if (response.rowCount > 0)
       return res.status(409).send({ message: 'esse usuario já foi cadastrado' })
 
-    const hash = await bcrypt.hash(password, 10)
+    const hash = bcrypt.hashSync(password, 10)
 
     await db.query(
       'INSERT INTO users (name, email, password) VALUES ($1, $2, $3)',
