@@ -20,6 +20,6 @@ urlRouter.post(
 )
 urlRouter.get('/urls/:id', getUrlsById)
 urlRouter.get('/urls/open/:shortUrl', redirectUrl)
-urlRouter.get('//urls/:id', authValidation, deleteUrlById)
+urlRouter.delete('/urls/:id', authValidation, deleteUrlById)
 
 export default urlRouter

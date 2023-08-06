@@ -5,8 +5,6 @@ export async function createShorten(req, res) {
   const { url } = req.body
   const { user_id } = res.locals.session
 
-  console.log(user_id)
-
   if (!url) {
     return res.status(400).send({ message: 'URL não fornecida.' })
   }
@@ -31,7 +29,7 @@ export async function getUrlsById(req, res) {
   const { id } = req.params
 
   try {
-    const response = await db.query('SELECT * FROM url WHERE id =$1', [id])
+    const response = await db.query('SELECT * FROM urls WHERE id =$1', [id])
 
     if (response.rowCount === 0) {
       return res.status(404).send({ message: 'URL encurtada não encontrada.' })
@@ -53,7 +51,7 @@ export async function redirectUrl(req, res) {
   const { shortUrl } = req.params
 
   try {
-    const response = await db.query('SELECT * FROM url WHERE short_url = $1', [
+    const response = await db.query('SELECT * FROM urls WHERE short_url = $1', [
       shortUrl
     ])
 
@@ -65,7 +63,7 @@ export async function redirectUrl(req, res) {
     const originalUrl = shortUrlInfo.original_url
     const visitors = shortUrlInfo.visitantes + 1
 
-    await db.query('UPDATE url SET visitantes = $1 WHERE short_url = $2', [
+    await db.query('UPDATE urls SET visitantes = $1 WHERE short_url = $2', [
       visitors,
       shortUrl
     ])
@@ -76,8 +74,24 @@ export async function redirectUrl(req, res) {
   }
 }
 
-export async function deleteUrlById() {
+export async function deleteUrlById(req, res) {
+  const { id } = req.params
+  const { user_id } = res.locals.session
+
   try {
+    const response = await db.query(
+      'SELECT * FROM urls where id=$1 AND user_id =$2',
+      [id, user_id]
+    )
+
+    if (response.rowCount === 0) {
+      return res
+        .status(404)
+        .send({ message: 'URL não encontrada ou não pertence ao usuário.' })
+    }
+
+    await db.query('DELETE FROM urls WHERE id = $1', [id])
+    res.status(200).send({ message: 'URL deletada com sucesso.' })
   } catch (err) {
     res.status(500).send(err.message)
   }
