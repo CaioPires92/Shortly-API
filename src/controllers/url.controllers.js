@@ -45,3 +45,30 @@ export async function getUrlsById(req, res) {
     res.status(500).send(err.message)
   }
 }
+
+export async function redirectUrl(req, res) {
+  const { shortUrl } = req.params
+
+  try {
+    const response = await db.query('SELECT * FROM url WHERE short_url = $1', [
+      shortUrl
+    ])
+
+    if (response.rowCount === 0) {
+      return res.status(404).send({ message: 'Short URL não encontrada.' })
+    }
+
+    const shortUrlInfo = response.rows[0]
+    const originalUrl = shortUrlInfo.original_url
+    const visitors = shortUrlInfo.visitantes + 1
+
+    await db.query('UPDATE url SET visitantes = $1 WHERE short_url = $2', [
+      visitors,
+      shortUrl
+    ])
+
+    res.redirect(originalUrl)
+  } catch (err) {
+    res.status(500).send(err.message)
+  }
+}
