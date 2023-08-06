@@ -61,9 +61,9 @@ export async function redirectUrl(req, res) {
 
     const shortUrlInfo = response.rows[0]
     const originalUrl = shortUrlInfo.original_url
-    const visitors = shortUrlInfo.visitantes + 1
+    const visitors = shortUrlInfo.visitors + 1
 
-    await db.query('UPDATE urls SET visitantes = $1 WHERE short_url = $2', [
+    await db.query('UPDATE urls SET visitors = $1 WHERE short_url = $2', [
       visitors,
       shortUrl
     ])
@@ -92,6 +92,37 @@ export async function deleteUrlById(req, res) {
 
     await db.query('DELETE FROM urls WHERE id = $1', [id])
     res.status(200).send({ message: 'URL deletada com sucesso.' })
+  } catch (err) {
+    res.status(500).send(err.message)
+  }
+}
+
+export async function currentUserDetails(req, res) {
+  const { user_id } = res.locals.session
+
+  try {
+    const queryUsersAndUrls = `   
+                  SELECT
+                  users.id AS id,
+                  users.name AS name,
+                  CAST(SUM(urls.visitors) AS INTEGER) AS visitCount,
+                  json_agg(json_build_object(
+                    'id', urls.id,
+                    'shortUrl', urls.short_url,
+                    'url', urls.original_url,
+                    'visitCount', urls.visitors
+                  )) AS shortenedUrls
+                FROM users
+                LEFT JOIN urls ON users.id = urls.user_id
+                WHERE users.id = $1
+                GROUP BY users.id;
+          `
+
+    const response = await db.query(queryUsersAndUrls, [user_id])
+
+    const user = response.rows[0]
+
+    res.status(200).send(user)
   } catch (err) {
     res.status(500).send(err.message)
   }
