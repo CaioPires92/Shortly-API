@@ -86,7 +86,7 @@ export async function deleteUrlById(req, res) {
 
     if (response.rowCount === 0) {
       return res
-        .status(404)
+        .status(401)
         .send({ message: 'URL não encontrada ou não pertence ao usuário.' })
     }
 
