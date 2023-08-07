@@ -37,8 +37,8 @@ export async function getRanking(req, res) {
             SELECT
             users.id AS id,
             users.name AS name,
-            COUNT(urls.id) AS linksCount,
-            COALESCE(SUM(urls.visitors), 0) AS visitCount
+            COUNT(urls.id)::integer AS "linksCount",
+            COALESCE(SUM(urls.visitors), 0)::integer AS "visitCount"
         FROM
             users
         LEFT JOIN
