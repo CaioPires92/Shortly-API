@@ -91,7 +91,7 @@ export async function deleteUrlById(req, res) {
     }
 
     await db.query('DELETE FROM urls WHERE id = $1', [id])
-    res.status(200).send({ message: 'URL deletada com sucesso.' })
+    res.status(204).send({ message: 'URL deletada com sucesso.' })
   } catch (err) {
     res.status(500).send(err.message)
   }
