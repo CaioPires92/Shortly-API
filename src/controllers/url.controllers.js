@@ -79,15 +79,20 @@ export async function deleteUrlById(req, res) {
   const { user_id } = res.locals.session
 
   try {
-    const response = await db.query(
-      'SELECT * FROM urls where id=$1 AND user_id =$2',
-      [id, user_id]
-    )
+    const query1 = 'SELECT * FROM urls where id=$1'
+    const query2 = 'SELECT * FROM urls where id=$1 AND user_id =$2'
 
-    if (response.rowCount === 0) {
+    const urls = await db.query(query1, [id])
+    const findUrlByIdAndUserId = await db.query(query2, [id, user_id])
+
+    if (urls.rowCount === 0) {
+      return res.status(404).send({ message: 'URL não encontrada' })
+    }
+
+    if (findUrlByIdAndUserId.rowCount === 0) {
       return res
         .status(401)
-        .send({ message: 'URL não encontrada ou não pertence ao usuário.' })
+        .send({ message: 'URL não pertence a esse usuario' })
     }
 
     await db.query('DELETE FROM urls WHERE id = $1', [id])
