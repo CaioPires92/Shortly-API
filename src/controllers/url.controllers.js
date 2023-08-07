@@ -40,7 +40,7 @@ export async function getUrlsById(req, res) {
     res.status(200).send({
       id: urlInfo.id,
       shortUrl: urlInfo.short_url,
-      originalUrl: urlInfo.original_url
+      url: urlInfo.original_url
     })
   } catch (err) {
     res.status(500).send(err.message)
@@ -96,6 +96,3 @@ export async function deleteUrlById(req, res) {
     res.status(500).send(err.message)
   }
 }
-
-
-
