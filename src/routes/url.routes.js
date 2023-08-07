@@ -1,8 +1,6 @@
 import { Router } from 'express'
-// import validateSchema from '../middlewares/validateSchema.middleware.js'
 import {
   createShorten,
-  currentUserDetails,
   deleteUrlById,
   getUrlsById,
   redirectUrl
@@ -22,6 +20,5 @@ urlRouter.post(
 urlRouter.get('/urls/:id', getUrlsById)
 urlRouter.get('/urls/open/:shortUrl', redirectUrl)
 urlRouter.delete('/urls/:id', authValidation, deleteUrlById)
-urlRouter.get('/users/me', authValidation, currentUserDetails)
 
 export default urlRouter
