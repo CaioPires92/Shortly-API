@@ -33,24 +33,6 @@ export async function currentUserDetails(req, res) {
 
 export async function getRanking(req, res) {
   try {
-    // const query = `
-
-    //         SELECT
-    //             users.id AS user_id,
-    //             users.name AS user_name,
-    //             COUNT(urls.id) AS linksCount,
-    //             SUM(urls.visitors) AS visitedCount
-    //         FROM
-    //              users
-    //         LEFT JOIN
-    //           urls ON users.id = urls.user_id
-    //         GROUP BY
-    //           users.id
-    //         ORDER BY
-    //           SUM(urls.visitors) DESC
-    //         LIMIT 10;
-    // `
-
     const query = `
             SELECT
             users.id AS id,
